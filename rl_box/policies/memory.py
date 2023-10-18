@@ -6,6 +6,8 @@ If no compression is used, equivalent to a replay buffer.
 import torch
 from typing import List
 
+from rl_box.policies.episodic import EpisodicData
+
 
 class EpisodicBuffer:
     """Remembers episodic rollouts."""
@@ -28,7 +30,7 @@ class EpisodicBuffer:
         self.action_dim = action_dim
 
         self.observations: List[torch.Tensor] = []
-        """List of observations, containing floating-point tensors of shape [T, O]."""
+        """List of observations, containing floating-point tensors of shape [T + 1, O]."""
         self.actions: List[torch.Tensor] = []
         """List of actions, containing tensors of shape [T, A]."""
         self.rewards: List[torch.Tensor] = []
@@ -48,7 +50,7 @@ class EpisodicBuffer:
     def a(self) -> int:
         return self.action_dim
 
-    def add(
+    def add_episode(
         self,
         observations: torch.Tensor,
         actions: torch.Tensor,
@@ -58,15 +60,15 @@ class EpisodicBuffer:
         """Add data from an episode to the `EpisodicBuffer`.
 
         Args:
-            observations: _description_
-            actions: _description_
-            rewards: _description_
-            dones: _description_
+            observations: Obervations from the episode, with shape [T + 1, O].
+            actions: Actions taken during the episode, with shape [T, A].
+            rewards: Rewards observed during the episode, with shape [T].
+            dones: Termination flags, with shape [T].
         """
         assert observations.shape == (
-            self.t,
+            self.t + 1,
             self.o,
-        ), f"Episode observations had wrong shape (expected ({self.t, self.o}), got ({observations.shape}))."
+        ), f"Episode observations had wrong shape (expected ({self.t + 1, self.o}), got ({observations.shape}))."
         assert (
             observations.dtype.is_floating_point
         ), "Episode observations must be floating-point."
@@ -93,7 +95,19 @@ class EpisodicBuffer:
         self.dones.append(dones)
 
     def clear(self):
+        """Clear data from the `EpisodicBuffer`.
+
+        For on-policy methods, should be called whenever the policy is updated.
+        """
         self.observations = []
         self.actions = []
         self.rewards = []
         self.dones = []
+
+    def episodic_data(self) -> EpisodicData:
+        return (
+            torch.stack(self.observations, dim=0),
+            torch.stack(self.actions, dim=0),
+            torch.stack(self.rewards, dim=0),
+            torch.stack(self.dones, dim=0),
+        )
