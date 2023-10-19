@@ -6,7 +6,7 @@ If no compression is used, equivalent to a replay buffer.
 import torch
 from typing import List
 
-from rl_box.policies.episodic import EpisodicData
+from rl_box.policies.actor_critic import EpisodicData
 
 
 class EpisodicBuffer:

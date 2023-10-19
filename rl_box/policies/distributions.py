@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import torch
 
-from rl_box.policies.params import CategoricalDistributionConfig
+from rl_box.policies.config import CategoricalDistributionConfig
 
 
 class ActionDistribution(ABC):
@@ -76,15 +76,16 @@ class CategoricalDistribution(ActionDistribution):
 
     def sample(self, params: torch.Tensor) -> torch.Tensor:
         return (
-            torch.distributions.Categorical(logits=params).sample().view(-1, 1)
+            torch.distributions.Categorical(logits=params)
+            .sample()
+            .unsqueeze(-1)
         )
 
     def log_prob(
         self, params: torch.Tensor, action: torch.Tensor
     ) -> torch.Tensor:
         logits = params - params.logsumexp(dim=-1, keepdim=True)
-        action = action.squeeze(-1)
-        return logits.gather(-1, action)
+        return logits.gather(-1, action).squeeze(-1)
 
     def entropy(self, params: torch.Tensor) -> torch.Tensor:
         logits = params - params.logsumexp(dim=-1, keepdim=True)

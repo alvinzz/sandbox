@@ -34,19 +34,3 @@ class Policy(ABC):
             action_distribution_params: Tensor with shape [*, T, D].
         """
         raise NotImplementedError
-
-
-# class NnCategoricalPolicy(Policy):
-#     def __init__(
-#         self,
-#         observation_dim: int,
-#         action_dim: int,
-#         policy_network: torch.nn.Module,
-#         critic: ValueCritic,
-#     ):
-#         super().__init__(observation_dim, action_dim)
-
-#         self.policy_network =
-
-#     def log_prob(self, action: torch.Tensor) -> torch.Tensor:
-#         return super().log_prob(action)

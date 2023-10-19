@@ -5,7 +5,7 @@ import torch
 from rl_box.traces import lambda_returns_and_advantages
 
 
-def torch_gae(
+def reference_torch_gae(
     gamma: float,
     lmbda: float,
     state_value: torch.Tensor,
@@ -71,7 +71,7 @@ def test_gae():
         ]
     )
 
-    torch_adv, torch_return = torch_gae(
+    torch_adv, torch_return = reference_torch_gae(
         gamma,
         lambda_,
         values[..., :-1],
