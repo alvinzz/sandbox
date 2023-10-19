@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import torch
 
-from rl_box.policies.params import CategoricalDistributionParams
+from rl_box.policies.params import CategoricalDistributionConfig
 
 
 class ActionDistribution(ABC):
@@ -65,8 +65,8 @@ class ActionDistribution(ABC):
 
 
 class CategoricalDistribution(ActionDistribution):
-    def __init__(self, params: CategoricalDistributionParams):
-        self.num_classes = params.num_classes
+    def __init__(self, config: CategoricalDistributionConfig):
+        self.num_classes = config.num_classes
 
     def action_dim(self) -> int:
         return 1

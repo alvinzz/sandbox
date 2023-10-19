@@ -7,9 +7,9 @@ import torch
 
 
 @dataclass
-class ActorCriticParams:
-    actor: ActorParams
-    critic: CriticParams
+class ActorCriticConfig:
+    actor: ActorConfig
+    critic: CriticConfig
     gamma: float
     """Time-decay parameter."""
     lambda_: float
@@ -17,43 +17,43 @@ class ActorCriticParams:
 
 
 @dataclass
-class ActorParams:
-    distribution: ActionDistributionParams
-    algo_params: AlgoParams
-    """Algorithm-specific parameters."""
+class ActorConfig:
+    distribution: ActionDistributionConfig
+    algo: AlgoConfig
+    """Algorithm-specific configuration."""
     normalize_advantages: bool
     """Flag to normalize episodic advantages to mean 0 and stddev 1."""
     entropy_coef: float
     """The multiplier for the entropy of the action distribution that is added to the reward."""
 
 
-class ActionDistributionParams(ABC):
-    """Marker class for Action Distribution parameters."""
+class ActionDistributionConfig(ABC):
+    """Marker class for Action Distribution configurations."""
 
     pass
 
 
 @dataclass
-class CategoricalDistributionParams(ActionDistributionParams):
+class CategoricalDistributionConfig(ActionDistributionConfig):
     num_classes: float
 
 
-class AlgoParams(ABC):
-    """Marker class for Policy Gradient algorithm parameters."""
+class AlgoConfig(ABC):
+    """Marker class for Policy Gradient algorithm configurations."""
 
     pass
 
 
 @dataclass
-class PpoParams(AlgoParams):
-    """Parameters for PPO (Proximal Policy Optimization, Schulman et. al., 2017)."""
+class PpoConfig(AlgoConfig):
+    """Configuration for PPO (Proximal Policy Optimization, Schulman et. al., 2017)."""
 
     clip_coef: float
     """Prevent the ratio of action probabilities from changing more than 1 +/- clip_coef from the data collection policy."""
 
 
 @dataclass
-class CriticParams:
+class CriticConfig:
     huber_loss_coef: float
     """Coefficient for the Huber loss."""
 

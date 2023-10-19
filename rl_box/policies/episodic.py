@@ -9,10 +9,10 @@ import torch
 
 from rl_box.policies.policy import Policy, ActionDistribution
 from rl_box.policies.distributions import CategoricalDistribution
-from rl_box.policies.params import (
-    ActorCriticParams,
-    CategoricalDistributionParams,
-    PpoParams,
+from rl_box.policies.config import (
+    ActorCriticConfig,
+    CategoricalDistributionConfig,
+    PpoConfig,
 )
 from rl_box.traces import lambda_returns_and_advantages
 from learner import GradientLearner
@@ -36,7 +36,7 @@ class ActorCritic(Policy):
         action_dim: int,
         network: torch.nn.Module,
         optimizer: torch.optim.Optimizer,
-        params: ActorCriticParams,
+        params: ActorCriticConfig,
     ):
         super().__init__(
             observation_dim,
@@ -48,7 +48,7 @@ class ActorCritic(Policy):
         self.params = params
 
         if isinstance(
-            self.params.actor.distribution, CategoricalDistributionParams
+            self.params.actor.distribution, CategoricalDistributionConfig
         ):
             action_distribution = CategoricalDistribution(
                 self.params.actor.distribution
@@ -87,13 +87,13 @@ class ActorCritic(Policy):
         return self.forward(observations)[0]
 
     def get_loss_fn(self) -> Callable[[EpisodicData], torch.Tensor]:
-        if isinstance(self.params.actor.algo_params, PpoParams):
+        if isinstance(self.params.actor.algo, PpoConfig):
             return self.get_ppo_loss_fn()
         else:
             raise NotImplementedError
 
     def get_ppo_loss_fn(self) -> Callable[[EpisodicData], torch.Tensor]:
-        algo_params: PpoParams = self.params.actor.algo_params
+        algo_params: PpoConfig = self.params.actor.algo
 
         critic_loss_fn = self.params.critic.get_huber_loss_fn()
 
